@@ -69,6 +69,16 @@ export default function ActiveWorkout({ navigate, payload }) {
     return (
       <div className="space-y-6 animate-fade-up">
         <header>
+          <button
+            type="button"
+            onClick={() => setPhase('workout')}
+            className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-muted transition-colors hover:text-white"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back to workout
+          </button>
           <h1 className="font-display text-3xl font-extrabold text-white">Workout complete</h1>
           <p className="mt-1 text-sm text-muted">Nice session. Log the details.</p>
         </header>
@@ -211,7 +221,7 @@ export default function ActiveWorkout({ navigate, payload }) {
       {detailEx && <ExerciseDetailModal exercise={detailEx} onClose={() => setDetailEx(null)} />}
 
       {rest.open && createPortal(
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/85 p-4 backdrop-blur-sm sm:items-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/85 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md animate-pop-in rounded-3xl border border-line bg-surface p-6">
             <div className="mb-5 flex justify-center gap-2">
               {REST_OPTIONS.map((s) => (
