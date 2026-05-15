@@ -1,0 +1,9 @@
+{
+  "appId": "com.fitflow.app",
+  "appName": "FitFlow",
+  "webDir": "dist",
+  "backgroundColor": "#0a0a0a",
+  "android": {
+    "backgroundColor": "#0a0a0a"
+  }
+}
