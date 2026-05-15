@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import MuscleDiagram from './MuscleDiagram.jsx';
 import { MUSCLE_GROUPS } from '../data/exercises.js';
 
@@ -25,13 +26,13 @@ export default function ExerciseDetailModal({ exercise, onClose }) {
     `how to ${exercise.name} exercise tutorial`,
   )}`;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
       {/* Sheet */}
-      <div className="animate-pop-in relative z-10 w-full max-w-md overflow-hidden rounded-t-3xl border-t border-line bg-[#141414] sm:rounded-3xl sm:border">
+      <div className="animate-pop-in relative z-10 flex max-h-[92vh] w-full max-w-md flex-col overflow-y-auto rounded-t-3xl border-t border-line bg-[#141414] sm:rounded-3xl sm:border">
 
         {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
@@ -116,6 +117,7 @@ export default function ExerciseDetailModal({ exercise, onClose }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

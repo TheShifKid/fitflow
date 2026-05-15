@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useWorkoutStore } from '../hooks/useWorkoutStore.js';
 import RestTimer from './RestTimer.jsx';
 import ExerciseDetailModal from './ExerciseDetailModal.jsx';
@@ -209,8 +210,8 @@ export default function ActiveWorkout({ navigate, payload }) {
 
       {detailEx && <ExerciseDetailModal exercise={detailEx} onClose={() => setDetailEx(null)} />}
 
-      {rest.open && (
-        <div className="fixed inset-0 z-30 flex items-end justify-center bg-ink/80 p-4 backdrop-blur-sm sm:items-center">
+      {rest.open && createPortal(
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/85 p-4 backdrop-blur-sm sm:items-center">
           <div className="w-full max-w-md animate-pop-in rounded-3xl border border-line bg-surface p-6">
             <div className="mb-5 flex justify-center gap-2">
               {REST_OPTIONS.map((s) => (
@@ -229,7 +230,8 @@ export default function ActiveWorkout({ navigate, payload }) {
             </div>
             <RestTimer seconds={rest.seconds} onDone={() => setRest((r) => ({ ...r, open: false }))} />
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
