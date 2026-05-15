@@ -40,13 +40,13 @@ export default function ActiveWorkout({ navigate, payload }) {
   const allDone = completedSets === totalSets;
 
   const toggleSet = (exId, idx) => {
+    const turningOn = !done[exId][idx];
     setDone((d) => {
       const next = { ...d, [exId]: [...d[exId]] };
-      const turningOn = !next[exId][idx];
-      next[exId][idx] = turningOn;
-      if (turningOn) setRest((r) => ({ ...r, open: true }));
+      next[exId][idx] = !next[exId][idx];
       return next;
     });
+    if (turningOn) setRest((r) => ({ ...r, open: true }));
   };
 
   const elapsedMinutes = () => Math.max(1, Math.round((Date.now() - startedAt.current) / 60000));
