@@ -34,10 +34,21 @@ function NavIcon({ d }) {
 export default function App() {
   const [screen, setScreen] = useState('dashboard');
   const [payload, setPayload] = useState(null);
+  const [history, setHistory] = useState([]);
 
   const navigate = (next, data = null) => {
+    setHistory((h) => (next === screen ? h : [...h, screen]));
     setPayload(data);
     setScreen(next);
+    window.scrollTo({ top: 0 });
+  };
+
+  const goBack = () => {
+    setHistory((h) => {
+      const prev = h.length ? h[h.length - 1] : 'dashboard';
+      setScreen(prev);
+      return h.slice(0, -1);
+    });
     window.scrollTo({ top: 0 });
   };
 
@@ -55,13 +66,27 @@ export default function App() {
     <div className="min-h-screen bg-ink font-sans text-white">
       <div className="mx-auto flex min-h-screen max-w-md flex-col">
         <header className="flex items-center justify-between px-5 pb-2 pt-6">
-          <button
-            type="button"
-            onClick={() => navigate('dashboard')}
-            className="font-display text-xl font-extrabold tracking-tight text-white"
-          >
-            Fit<span className="text-lime">Flow</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {screen !== 'dashboard' && (
+              <button
+                type="button"
+                onClick={goBack}
+                aria-label="Back"
+                className="-ml-2 rounded-full p-2 text-muted transition-colors hover:text-white"
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => navigate('dashboard')}
+              className="font-display text-xl font-extrabold tracking-tight text-white"
+            >
+              Fit<span className="text-lime">Flow</span>
+            </button>
+          </div>
           <button
             type="button"
             onClick={() => navigate('settings')}
