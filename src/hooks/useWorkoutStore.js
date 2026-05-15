@@ -5,16 +5,17 @@ const STORAGE_KEY = 'fitflow-data-v1';
 
 const DEFAULT_DATA = {
   workouts: [],
+  savedTemplates: [],
   settings: {
     avoidedParts: [],
-    equipment: 'none', // 'none' | 'bands' | 'dumbbells'
-    fitnessLevel: 'beginner', // 'beginner' | 'intermediate' | 'advanced'
+    equipment: 'none',
+    fitnessLevel: 'beginner',
   },
 };
 
-const DIFFICULTY_RANK = { beginner: 1, intermediate: 2, advanced: 3 };
+const DIFFICULTY_RANK  = { beginner: 1, intermediate: 2, advanced: 3 };
 const INTENSITY_FACTOR = { easy: 0.85, medium: 1, hard: 1.2 };
-const EXERCISE_COUNT = { 20: 4, 30: 5, 45: 6, 60: 8 };
+const EXERCISE_COUNT   = { 20: 4, 30: 5, 45: 6, 60: 8 };
 
 function loadData() {
   try {
@@ -22,15 +23,16 @@ function loadData() {
     if (!raw) return DEFAULT_DATA;
     const parsed = JSON.parse(raw);
     return {
-      workouts: Array.isArray(parsed.workouts) ? parsed.workouts : [],
-      settings: { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) },
+      workouts:       Array.isArray(parsed.workouts)       ? parsed.workouts       : [],
+      savedTemplates: Array.isArray(parsed.savedTemplates) ? parsed.savedTemplates : [],
+      settings:       { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) },
     };
   } catch {
     return DEFAULT_DATA;
   }
 }
 
-// ---- date helpers ----
+// ── date helpers ──────────────────────────────────────────
 export function dayKey(d) {
   const date = new Date(d);
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -38,17 +40,16 @@ export function dayKey(d) {
 
 function startOfWeek(d = new Date()) {
   const date = new Date(d);
-  const day = date.getDay(); // 0 = Sunday
   date.setHours(0, 0, 0, 0);
-  date.setDate(date.getDate() - day);
+  date.setDate(date.getDate() - date.getDay());
   return date;
 }
 
-// ---- workout generator (pure) ----
+// ── workout generator (pure) ──────────────────────────────
 export function generateWorkout({ muscleGroups, duration, intensity, equipment, fitnessLevel, avoidedParts }) {
-  const avoided = new Set(avoidedParts || []);
+  const avoided      = new Set(avoidedParts || []);
   const levelCeiling = DIFFICULTY_RANK[fitnessLevel] || 1;
-  const targets = (muscleGroups || []).filter((m) => !avoided.has(m));
+  const targets      = (muscleGroups || []).filter((m) => !avoided.has(m));
 
   const pool = exercises.filter((ex) => {
     if (!targets.includes(ex.muscle)) return false;
@@ -65,18 +66,14 @@ export function generateWorkout({ muscleGroups, duration, intensity, equipment, 
   const wanted = EXERCISE_COUNT[duration] || 5;
   const factor = INTENSITY_FACTOR[intensity] || 1;
 
-  // Bucket by muscle so the workout covers each selected group.
   const byMuscle = {};
-  for (const ex of pool) {
-    (byMuscle[ex.muscle] ||= []).push(ex);
-  }
+  for (const ex of pool) (byMuscle[ex.muscle] ||= []).push(ex);
   Object.values(byMuscle).forEach(shuffle);
 
-  const picked = [];
-  const usedIds = new Set();
+  const picked   = [];
+  const usedIds  = new Set();
+  let   added    = true;
 
-  // Round-robin: one exercise per muscle group until we hit the target count.
-  let added = true;
   while (picked.length < wanted && added) {
     added = false;
     for (const muscle of targets) {
@@ -84,11 +81,7 @@ export function generateWorkout({ muscleGroups, duration, intensity, equipment, 
       const bucket = byMuscle[muscle];
       if (!bucket) continue;
       const next = bucket.find((ex) => !usedIds.has(ex.id));
-      if (next) {
-        usedIds.add(next.id);
-        picked.push(next);
-        added = true;
-      }
+      if (next) { usedIds.add(next.id); picked.push(next); added = true; }
     }
   }
 
@@ -97,15 +90,14 @@ export function generateWorkout({ muscleGroups, duration, intensity, equipment, 
     reps: ex.reps <= 1 ? 1 : Math.max(4, Math.round(ex.reps * factor)),
   }));
 
-  const message =
-    tuned.length < wanted
-      ? `Only ${tuned.length} matching exercise${tuned.length === 1 ? '' : 's'} found — add equipment or muscle groups for a fuller session.`
-      : null;
+  const message = tuned.length < wanted
+    ? `Only ${tuned.length} matching exercise${tuned.length === 1 ? '' : 's'} found — add equipment or muscle groups for a fuller session.`
+    : null;
 
   return { exercises: tuned, message };
 }
 
-// ---- context ----
+// ── context ───────────────────────────────────────────────
 const StoreContext = createContext(null);
 
 export function WorkoutProvider({ children }) {
@@ -122,6 +114,20 @@ export function WorkoutProvider({ children }) {
     }));
   }, []);
 
+  const saveTemplate = useCallback((name, config) => {
+    setData((d) => ({
+      ...d,
+      savedTemplates: [
+        { id: `t-${Date.now()}`, name, ...config },
+        ...d.savedTemplates,
+      ],
+    }));
+  }, []);
+
+  const deleteTemplate = useCallback((id) => {
+    setData((d) => ({ ...d, savedTemplates: d.savedTemplates.filter((t) => t.id !== id) }));
+  }, []);
+
   const updateSettings = useCallback((patch) => {
     setData((d) => ({ ...d, settings: { ...d.settings, ...patch } }));
   }, []);
@@ -134,8 +140,8 @@ export function WorkoutProvider({ children }) {
   const stats = useMemo(() => computeStats(data.workouts), [data.workouts]);
 
   const value = useMemo(
-    () => ({ ...data, addWorkout, updateSettings, resetAll, stats }),
-    [data, addWorkout, updateSettings, resetAll, stats],
+    () => ({ ...data, addWorkout, saveTemplate, deleteTemplate, updateSettings, resetAll, stats }),
+    [data, addWorkout, saveTemplate, deleteTemplate, updateSettings, resetAll, stats],
   );
 
   return createElement(StoreContext.Provider, { value }, children);
@@ -147,38 +153,30 @@ export function useWorkoutStore() {
   return ctx;
 }
 
-// ---- stats ----
+// ── stats ─────────────────────────────────────────────────
 function computeStats(workouts) {
-  const dayKeys = new Set(workouts.map((w) => dayKey(w.date)));
+  const dayKeys       = new Set(workouts.map((w) => dayKey(w.date)));
   const workedOutToday = dayKeys.has(dayKey(new Date()));
 
-  // current streak: consecutive days ending today or yesterday
   let streak = 0;
   const cursor = new Date();
   if (!dayKeys.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
-  while (dayKeys.has(dayKey(cursor))) {
-    streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
-  }
+  while (dayKeys.has(dayKey(cursor))) { streak += 1; cursor.setDate(cursor.getDate() - 1); }
 
-  // this week
-  const weekStart = startOfWeek();
-  const weekDays = [false, false, false, false, false, false, false];
+  const weekStart  = startOfWeek();
+  const weekDays   = [false, false, false, false, false, false, false];
   for (const w of workouts) {
     const d = new Date(w.date);
     if (d >= weekStart) weekDays[d.getDay()] = true;
   }
-  const weeklyCount = weekDays.filter(Boolean).length;
-
-  const totalExercises = workouts.reduce((sum, w) => sum + (w.exerciseCount || 0), 0);
 
   return {
     workedOutToday,
     streak,
     weekDays,
-    weeklyCount,
-    totalSessions: workouts.length,
-    totalExercises,
+    weeklyCount:    weekDays.filter(Boolean).length,
+    totalSessions:  workouts.length,
+    totalExercises: workouts.reduce((s, w) => s + (w.exerciseCount || 0), 0),
   };
 }
 

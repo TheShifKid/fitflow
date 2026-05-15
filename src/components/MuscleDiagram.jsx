@@ -1,22 +1,8 @@
-// Geometric body silhouette — highlighted muscle shown in lime.
-const BODY = '#242424';
-const STROKE = '#333';
-const LIME = '#c8f135';
-const DIM = '#1a1a1a';
+const BODY   = '#2e2e2e';
+const STROKE = '#444';
+const LIME   = '#c8f135';
+const LIMEGLOW = 'rgba(200,241,53,0.18)';
 
-function Part({ d, muscle, targets, rx, ry, cx, cy, x, y, w, h, shape = 'rect' }) {
-  const active = targets.includes(muscle);
-  const fill = active ? LIME : BODY;
-  const opacity = active ? 1 : 0.85;
-
-  if (shape === 'circle')
-    return <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={fill} stroke={STROKE} strokeWidth="1" opacity={opacity} />;
-  if (shape === 'path')
-    return <path d={d} fill={fill} stroke={STROKE} strokeWidth="1" opacity={opacity} />;
-  return <rect x={x} y={y} width={w} height={h} rx={rx || 5} fill={fill} stroke={STROKE} strokeWidth="1" opacity={opacity} />;
-}
-
-// Which SVG body parts light up per muscle group
 const MUSCLE_MAP = {
   chest:     ['chest'],
   back:      ['back-l', 'back-r'],
@@ -29,71 +15,89 @@ const MUSCLE_MAP = {
   core:      ['core'],
 };
 
-export default function MuscleDiagram({ muscle }) {
-  const targets = MUSCLE_MAP[muscle] || [];
+function Part({ id, targets, shape, d, cx, cy, rx, ry, x, y, w, h, rr = 5 }) {
+  const on = targets.includes(id);
+  const fill   = on ? LIME   : BODY;
+  const stroke = on ? LIME   : STROKE;
+  const sw     = on ? 1.5    : 1;
+  const glow   = on ? LIMEGLOW : 'none';
 
-  const P = (props) => <Part {...props} targets={targets} />;
+  const shared = { fill, stroke, strokeWidth: sw };
 
   return (
-    <svg viewBox="0 0 120 265" className="h-full w-full" aria-hidden>
-      {/* ── Head ── */}
-      <P shape="circle" muscle="head" cx={60} cy={14} rx={11} ry={12} />
-
-      {/* ── Neck ── */}
-      <rect x={55} y={25} width={10} height={9} rx={3} fill={BODY} stroke={STROKE} strokeWidth="1" />
-
-      {/* ── Trapezius / upper back area behind shoulders ── */}
-      <P shape="path" muscle="back-l" d="M42,34 L56,34 L54,58 L36,58 Z" />
-      <P shape="path" muscle="back-r" d="M78,34 L64,34 L66,58 L84,58 Z" />
-
-      {/* ── Shoulders (deltoids) ── */}
-      <P shape="circle" muscle="shoulder-l" cx={32} cy={46} rx={12} ry={9} />
-      <P shape="circle" muscle="shoulder-r" cx={88} cy={46} rx={12} ry={9} />
-
-      {/* ── Chest ── */}
-      <P shape="path" muscle="chest" d="M44,35 L76,35 L79,62 L41,62 Z" />
-
-      {/* ── Core / Abs ── */}
-      <P shape="rect" muscle="core" x={42} y={62} w={36} h={32} rx={4} />
-
-      {/* ── Upper arms (biceps front / triceps sides) ── */}
-      <P shape="rect" muscle="bicep-l"  x={18} y={50} w={13} h={38} rx={6} />
-      <P shape="rect" muscle="bicep-r"  x={89} y={50} w={13} h={38} rx={6} />
-      <P shape="rect" muscle="tricep-l" x={16} y={52} w={8}  h={34} rx={4} />
-      <P shape="rect" muscle="tricep-r" x={96} y={52} w={8}  h={34} rx={4} />
-
-      {/* ── Lower arms ── */}
-      <rect x={15} y={89} width={12} height={36} rx={5} fill={BODY} stroke={STROKE} strokeWidth="1" opacity={0.7} />
-      <rect x={93} y={89} width={12} height={36} rx={5} fill={BODY} stroke={STROKE} strokeWidth="1" opacity={0.7} />
-
-      {/* ── Hips / Glutes ── */}
-      <P shape="path" muscle="glute" d="M41,94 L79,94 L82,118 L38,118 Z" />
-
-      {/* ── Quads (upper legs) ── */}
-      <P shape="rect" muscle="quad-l" x={39} y={118} w={18} h={52} rx={7} />
-      <P shape="rect" muscle="quad-r" x={63} y={118} w={18} h={52} rx={7} />
-
-      {/* ── Knees ── */}
-      <rect x={40} y={170} width={16} height={10} rx={5} fill={DIM} stroke={STROKE} strokeWidth="1" opacity={0.6} />
-      <rect x={64} y={170} width={16} height={10} rx={5} fill={DIM} stroke={STROKE} strokeWidth="1" opacity={0.6} />
-
-      {/* ── Calves ── */}
-      <P shape="rect" muscle="calf-l" x={40} y={180} w={15} h={44} rx={6} />
-      <P shape="rect" muscle="calf-r" x={65} y={180} w={15} h={44} rx={6} />
-
-      {/* ── Feet ── */}
-      <rect x={38} y={224} width={18} height={10} rx={4} fill={BODY} stroke={STROKE} strokeWidth="1" opacity={0.6} />
-      <rect x={64} y={224} width={18} height={10} rx={4} fill={BODY} stroke={STROKE} strokeWidth="1" opacity={0.6} />
-
-      {/* Lime glow under highlighted parts */}
-      {targets.length > 0 && (
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-        </defs>
+    <>
+      {on && shape === 'ellipse' && (
+        <ellipse cx={cx} cy={cy} rx={rx + 5} ry={ry + 5} fill={glow} />
       )}
+      {on && shape === 'rect' && (
+        <rect x={x - 4} y={y - 4} width={w + 8} height={h + 8} rx={rr + 4} fill={glow} />
+      )}
+      {on && shape === 'path' && (
+        <path d={d} fill={glow} transform="scale(1.06) translate(-3.5,-3)" />
+      )}
+      {shape === 'ellipse' && <ellipse cx={cx} cy={cy} rx={rx} ry={ry} {...shared} />}
+      {shape === 'rect'    && <rect x={x} y={y} width={w} height={h} rx={rr} {...shared} />}
+      {shape === 'path'    && <path d={d} {...shared} />}
+    </>
+  );
+}
+
+export default function MuscleDiagram({ muscle }) {
+  const targets = MUSCLE_MAP[muscle] || [];
+  const P = (p) => <Part {...p} targets={targets} />;
+
+  return (
+    <svg viewBox="0 0 120 260" className="h-full w-full" aria-hidden>
+      {/* Head */}
+      <ellipse cx={60} cy={14} rx={11} ry={12} fill={BODY} stroke={STROKE} strokeWidth="1" />
+
+      {/* Neck */}
+      <rect x={55} y={25} width={10} height={8} rx={3} fill={BODY} stroke={STROKE} strokeWidth="1" />
+
+      {/* Upper back (trapezius) */}
+      <P id="back-l" shape="path" d="M42,33 L57,33 L55,57 L36,57 Z" />
+      <P id="back-r" shape="path" d="M78,33 L63,33 L65,57 L84,57 Z" />
+
+      {/* Shoulders */}
+      <P id="shoulder-l" shape="ellipse" cx={31} cy={45} rx={12} ry={9} />
+      <P id="shoulder-r" shape="ellipse" cx={89} cy={45} rx={12} ry={9} />
+
+      {/* Chest */}
+      <P id="chest" shape="path" d="M44,34 L76,34 L79,61 L41,61 Z" />
+
+      {/* Core */}
+      <P id="core" shape="rect" x={42} y={61} w={36} h={30} rr={5} />
+
+      {/* Biceps (upper arms front) */}
+      <P id="bicep-l"  shape="rect" x={19} y={48} w={13} h={38} rr={6} />
+      <P id="bicep-r"  shape="rect" x={88} y={48} w={13} h={38} rr={6} />
+
+      {/* Triceps (shown slightly offset, behind arms) */}
+      <P id="tricep-l" shape="rect" x={16} y={50} w={9}  h={33} rr={4} />
+      <P id="tricep-r" shape="rect" x={95} y={50} w={9}  h={33} rr={4} />
+
+      {/* Lower arms */}
+      <rect x={16} y={87} width={12} height={34} rx={5} fill={BODY} stroke={STROKE} strokeWidth="1" />
+      <rect x={92} y={87} width={12} height={34} rx={5} fill={BODY} stroke={STROKE} strokeWidth="1" />
+
+      {/* Glutes / hips */}
+      <P id="glute" shape="path" d="M41,91 L79,91 L83,116 L37,116 Z" />
+
+      {/* Quads */}
+      <P id="quad-l" shape="rect" x={38} y={116} w={19} h={50} rr={8} />
+      <P id="quad-r" shape="rect" x={63} y={116} w={19} h={50} rr={8} />
+
+      {/* Knees */}
+      <rect x={39} y={166} width={17} height={9}  rx={4} fill="#222" stroke={STROKE} strokeWidth="1" />
+      <rect x={64} y={166} width={17} height={9}  rx={4} fill="#222" stroke={STROKE} strokeWidth="1" />
+
+      {/* Calves */}
+      <P id="calf-l" shape="rect" x={39} y={175} w={16} h={42} rr={7} />
+      <P id="calf-r" shape="rect" x={65} y={175} w={16} h={42} rr={7} />
+
+      {/* Feet */}
+      <rect x={37} y={217} width={19} height={9} rx={4} fill={BODY} stroke={STROKE} strokeWidth="1" />
+      <rect x={64} y={217} width={19} height={9} rx={4} fill={BODY} stroke={STROKE} strokeWidth="1" />
     </svg>
   );
 }
