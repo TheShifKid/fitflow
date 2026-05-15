@@ -1,44 +1,104 @@
-# DriveMind 🚗
+# 💪 FitFlow — Personal Workout Tracker
 
-Israeli right-of-way training app — practice intersection priority decisions under pressure.
+A sleek, mobile-first workout tracker and AI workout generator. No backend, no account, no fees — everything runs in your browser and saves locally.
 
-## Features
+---
 
-- 🎯 **Three modes**: Learn, Practice, Test (10-question challenge)
-- 🧠 **Smart practice** — adapts to your weak spots
-- 🚦 **Realistic scenarios** — main road + side street, uncontrolled, left-turn, T-junction, U-turn
-- 🚶 **Pedestrians** at crosswalks (occasional)
-- 🏆 **14 achievements** to unlock
-- 📋 **Mistake history** — review and replay every wrong answer
-- ⚙️ **3 difficulty levels**
-- 🔊 **Audio feedback** — generated on the fly, no asset files
-- 📱 **Installable PWA** — works offline once installed
+## ✨ Features
 
-## Stack
+- **Workout Generator** — pick muscle groups, duration, and intensity. FitFlow builds a custom session from a database of 58+ exercises
+- **Active Workout** — check off sets in real time, rest timer between sets (30 / 60 / 90s countdown ring)
+- **Exercise Detail** — tap any exercise to see a muscle diagram, full instructions, and a YouTube demo link
+- **History & Streaks** — weekly bar chart, current streak, total sessions and exercises logged
+- **Settings** — lock out injury-prone muscle groups permanently, set equipment availability and fitness level
+- **Works offline** — PWA with service worker, installable to home screen
+- **All data stays on your device** — localStorage only, nothing sent anywhere
 
-- Vite + React 18 + TypeScript
-- Tailwind CSS
-- Framer Motion
-- Zustand (with persist middleware)
-- Vitest
+---
 
-## Run locally
+## 🖥️ Tech Stack
+
+| | |
+|---|---|
+| Framework | React 18 + Vite |
+| Styling | Tailwind CSS |
+| Data | localStorage (no backend) |
+| PWA | vite-plugin-pwa + Workbox |
+| Android | Capacitor |
+| Deploy | GitHub Pages (GitHub Actions) |
+| Fonts | Syne (headings) · DM Sans (body) |
+
+---
+
+## 🚀 Running Locally
 
 ```bash
+git clone https://github.com/YOUR_USERNAME/fitflow.git
+cd fitflow
 npm install
 npm run dev
 ```
 
-## Build for production
+Open [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 📦 Build & Preview
 
 ```bash
-npm run build
+npm run build    # production build
+npm run preview  # preview production build locally
 ```
 
-The `dist/` folder is a static bundle — drag it onto Netlify, Vercel, GitHub Pages, etc.
+---
 
-## Test the priority engine
+## 📱 Deploy
 
-```bash
-npm test
+The app auto-deploys to **GitHub Pages** on every push to `master` via GitHub Actions.
+
+To enable: go to your repo → **Settings → Pages → Source → GitHub Actions**
+
+Live URL: `https://YOUR_USERNAME.github.io/fitflow`
+
+---
+
+## 🗂️ Project Structure
+
 ```
+src/
+├── components/
+│   ├── Dashboard.jsx          # Home screen, streak, stats
+│   ├── WorkoutGenerator.jsx   # 3-step workout builder
+│   ├── ActiveWorkout.jsx      # Live workout + set tracking
+│   ├── History.jsx            # Past workouts + weekly chart
+│   ├── Settings.jsx           # Equipment, fitness level, avoided areas
+│   ├── ExerciseCard.jsx       # Clickable exercise card
+│   ├── ExerciseDetailModal.jsx # Muscle diagram + YouTube link
+│   ├── MuscleDiagram.jsx      # SVG body with highlighted muscle
+│   ├── BodyPartSelector.jsx   # Muscle group grid selector
+│   └── RestTimer.jsx          # Countdown ring timer
+├── data/
+│   └── exercises.js           # 58+ exercise database
+├── hooks/
+│   └── useWorkoutStore.js     # All state + localStorage logic
+└── App.jsx                    # Screen navigation
+```
+
+---
+
+## 🏋️ Exercise Database
+
+58+ exercises across 9 muscle groups:
+
+`Chest` · `Back` · `Shoulders` · `Biceps` · `Triceps` · `Legs` · `Glutes` · `Calves` · `Core`
+
+Each exercise includes difficulty level (`beginner` / `intermediate` / `advanced`), equipment requirement (`none` / `bands` / `dumbbells`), and an `avoid_if` list for injury-safe filtering.
+
+---
+
+## 🎨 Design
+
+- Dark near-black background `#0a0a0a`
+- Electric lime accent `#c8f135`
+- Flat, sharp, no gradients or glassmorphism
+- Mobile-first, fully responsive
