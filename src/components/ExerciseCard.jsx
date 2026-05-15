@@ -38,7 +38,7 @@ export default function ExerciseCard({ exercise, index = 0, footer, dim = false 
               {LABELS[exercise.muscle] || exercise.muscle}
             </span>
           </div>
-          <div className="shrink-0 rounded-xl bg-lime px-3 py-1.5 text-center font-display text-sm font-bold text-ink">
+          <div className="shrink-0 rounded-xl bg-lime px-3 py-1.5 text-center font-sans text-sm font-bold tabular-nums text-ink">
             {repLabel(exercise)}
           </div>
         </div>

@@ -42,7 +42,7 @@ export default function RestTimer({ seconds, onDone }) {
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-display text-4xl font-extrabold text-white">{remaining}</span>
+          <span className="font-sans text-5xl font-bold tabular-nums text-white">{remaining}</span>
           <span className="text-xs font-semibold uppercase tracking-wide text-muted">rest</span>
         </div>
       </div>

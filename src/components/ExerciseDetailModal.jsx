@@ -61,7 +61,7 @@ export default function ExerciseDetailModal({ exercise, onClose }) {
             <div className="mt-3 flex flex-col gap-2">
               {/* Volume */}
               <div className="flex items-center gap-2">
-                <span className="rounded-lg bg-lime px-3 py-1 font-display text-sm font-bold text-ink">
+                <span className="rounded-lg bg-lime px-3 py-1 font-sans text-sm font-bold tabular-nums text-ink">
                   {repsLabel}
                 </span>
               </div>

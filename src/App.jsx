@@ -72,9 +72,9 @@ export default function App() {
                 type="button"
                 onClick={goBack}
                 aria-label="Back"
-                className="-ml-2 rounded-full p-2 text-muted transition-colors hover:text-white"
+                className="-ml-1 flex h-9 w-9 items-center justify-center rounded-full border border-line bg-surface text-white transition-colors active:scale-95 hover:border-muted"
               >
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
               </button>

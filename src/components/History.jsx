@@ -34,7 +34,7 @@ export default function History({ navigate }) {
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <h1 className="font-display text-3xl font-extrabold text-white">History</h1>
-        <div className="rounded-full bg-lime px-3 py-1.5 font-display text-sm font-bold text-ink">
+        <div className="rounded-full bg-lime px-3 py-1.5 font-sans text-sm font-bold tabular-nums text-ink">
           {stats.streak} day streak
         </div>
       </header>
@@ -84,7 +84,7 @@ export default function History({ navigate }) {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-display text-base font-bold text-white">{w.duration} min</div>
+                    <div className="font-sans text-base font-bold tabular-nums text-white">{w.duration} min</div>
                     {w.difficulty && (
                       <div className={`text-xs font-semibold capitalize ${RATING_COLOR[w.difficulty] || 'text-muted'}`}>
                         {w.difficulty}

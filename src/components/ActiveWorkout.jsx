@@ -85,15 +85,15 @@ export default function ActiveWorkout({ navigate, payload }) {
 
         <div className="grid grid-cols-3 gap-3">
           <div className="rounded-2xl border border-line bg-surface p-4">
-            <div className="font-display text-2xl font-extrabold text-lime">{exercises.length}</div>
+            <div className="font-sans text-3xl font-bold tabular-nums text-lime">{exercises.length}</div>
             <div className="text-xs uppercase tracking-wide text-muted">Exercises</div>
           </div>
           <div className="rounded-2xl border border-line bg-surface p-4">
-            <div className="font-display text-2xl font-extrabold text-lime">{completedSets}</div>
+            <div className="font-sans text-3xl font-bold tabular-nums text-lime">{completedSets}</div>
             <div className="text-xs uppercase tracking-wide text-muted">Sets done</div>
           </div>
           <div className="rounded-2xl border border-line bg-surface p-4">
-            <div className="font-display text-2xl font-extrabold text-lime">{elapsedMinutes()}</div>
+            <div className="font-sans text-3xl font-bold tabular-nums text-lime">{elapsedMinutes()}</div>
             <div className="text-xs uppercase tracking-wide text-muted">Minutes</div>
           </div>
         </div>

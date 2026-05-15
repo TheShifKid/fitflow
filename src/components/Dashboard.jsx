@@ -24,7 +24,7 @@ function relDate(iso) {
 function Stat({ value, label }) {
   return (
     <div className="rounded-2xl border border-line bg-surface p-4">
-      <div className="font-display text-3xl font-extrabold text-white">{value}</div>
+      <div className="font-sans text-3xl font-bold tabular-nums text-white">{value}</div>
       <div className="mt-1 text-xs font-medium uppercase tracking-wide text-muted">{label}</div>
     </div>
   );
@@ -53,7 +53,7 @@ export default function Dashboard({ navigate }) {
             </div>
           </div>
           <div className="text-right">
-            <div className="font-display text-2xl font-bold text-white">{stats.streak}</div>
+            <div className="font-sans text-3xl font-bold tabular-nums text-white">{stats.streak}</div>
             <div className="text-xs uppercase tracking-wide text-muted">day streak</div>
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function Dashboard({ navigate }) {
                     {(w.muscleGroups || []).map((m) => LABELS[m] || m).join(' · ') || 'Workout'}
                   </div>
                 </div>
-                <div className="font-display text-sm font-bold text-lime">{w.duration} min</div>
+                <div className="font-sans text-sm font-bold tabular-nums text-lime">{w.duration} min</div>
               </button>
             ))}
           </div>
